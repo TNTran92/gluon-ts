@@ -129,7 +129,7 @@ class FeedForwardNetwork(nn.Module):
             batch_size=batch_size,
             input_transform=input_transform,
             forecast_generator=DistributionForecastGenerator(self.distr_output),
-            device=None,
+            device=device,
         )
 ```
 
@@ -265,7 +265,7 @@ We can now train the model using the tooling that PyTorch Lightning provides:
 
 ```python
 trainer = pl.Trainer(max_epochs=10, gpus=-1 if torch.cuda.is_available() else None)
-trainer.fit(net, train_dataloader=data_loader)
+trainer.fit(net, data_loader)
 ```
 
 ## Create predictor out of the trained model, and test it

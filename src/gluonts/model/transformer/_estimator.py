@@ -38,7 +38,7 @@ from gluonts.mx.model.estimator import GluonEstimator
 from gluonts.mx.model.predictor import RepresentableBlockPredictor
 from gluonts.mx.trainer import Trainer
 from gluonts.mx.util import copy_parameters, get_hybrid_forward_input_names
-from gluonts.support.util import maybe_len
+from gluonts.itertools import maybe_len
 from gluonts.time_feature import (
     TimeFeature,
     get_lags_for_frequency,
@@ -357,7 +357,7 @@ class TransformerEstimator(GluonEstimator):
             cardinality=self.cardinality,
             embedding_dimension=self.embedding_dimension,
             lags_seq=self.lags_seq,
-            scaling=True,
+            scaling=self.scaling,
         )
 
     def create_predictor(
@@ -375,7 +375,7 @@ class TransformerEstimator(GluonEstimator):
             cardinality=self.cardinality,
             embedding_dimension=self.embedding_dimension,
             lags_seq=self.lags_seq,
-            scaling=True,
+            scaling=self.scaling,
             num_parallel_samples=self.num_parallel_samples,
         )
 
