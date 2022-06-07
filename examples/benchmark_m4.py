@@ -14,6 +14,13 @@
 """
 This example shows how to fit a model and evaluate its predictions.
 """
+from mxnet import nd, gpu, gluon, autograd
+from mxnet.gluon import nn
+from mxnet.gluon.data.vision import datasets, transforms
+import time
+x = nd.ones((3,4), ctx=gpu(0))
+x
+
 import pprint
 from functools import partial
 
@@ -60,6 +67,7 @@ def evaluate(dataset_name, estimator):
         trainer=Trainer(
             epochs=epochs,
             num_batches_per_epoch=num_batches_per_epoch,
+            ctx=gpu(1),
         ),
     )
 
@@ -81,6 +89,30 @@ def evaluate(dataset_name, estimator):
     eval_dict["dataset"] = dataset_name
     eval_dict["estimator"] = type(estimator).__name__
     return eval_dict
+
+############### Isolate and run one estimator for testing ###########
+dataset = get_dataset("m4_hourly")
+estimator = DeepAREstimator(
+        prediction_length=dataset.metadata.prediction_length,
+        freq=dataset.metadata.freq,
+        use_feat_static_cat=True,
+        cardinality=[
+            feat_static_cat.cardinality
+            for feat_static_cat in dataset.metadata.feat_static_cat
+        ],
+        trainer=Trainer(
+            epochs=5,
+            num_batches_per_epoch=10,
+        ),
+    )
+print(f"evaluating {estimator} on {dataset}")
+predictor = estimator.train(dataset.train)
+forecast_it, ts_it = make_evaluation_predictions(
+        dataset.test, predictor=predictor, num_samples=100
+    )
+agg_metrics, item_metrics = Evaluator()(
+        ts_it, forecast_it, num_series=len(dataset.test)
+    )
 
 
 if __name__ == "__main__":
