@@ -102,7 +102,8 @@ estimator = DeepAREstimator(
         ],
         trainer=Trainer(
             epochs=5,
-            num_batches_per_epoch=10,
+            num_batches_per_epoch=300,
+            ctx=gpu(0),
         ),
     )
 print(f"evaluating {estimator} on {dataset}")
