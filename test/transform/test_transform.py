@@ -115,9 +115,9 @@ def test_add_method():
         target_field=FieldName.TARGET,
         output_field="time_feat",
         time_features=[
-            time_feature.DayOfWeek(),
-            time_feature.DayOfMonth(),
-            time_feature.MonthOfYear(),
+            time_feature.day_of_week,
+            time_feature.day_of_month,
+            time_feature.month_of_year,
         ],
         pred_length=24,
     ) + transform.AddAgeFeature(
@@ -140,7 +140,7 @@ def test_AddTimeFeatures(start, target, is_train: bool):
         target_field=FieldName.TARGET,
         output_field="myout",
         pred_length=pred_length,
-        time_features=[time_feature.DayOfWeek(), time_feature.DayOfMonth()],
+        time_features=[time_feature.day_of_week, time_feature.day_of_month],
         dtype=np.float64,
     )
 
@@ -154,8 +154,8 @@ def test_AddTimeFeatures(start, target, is_train: bool):
     tmp_idx = pd.period_range(
         start=start, freq=start.freq, periods=expected_length
     )
-    assert np.alltrue(mat[0] == time_feature.DayOfWeek()(tmp_idx))
-    assert np.alltrue(mat[1] == time_feature.DayOfMonth()(tmp_idx))
+    assert np.alltrue(mat[0] == time_feature.day_of_week(tmp_idx))
+    assert np.alltrue(mat[1] == time_feature.day_of_month(tmp_idx))
 
 
 @pytest.mark.parametrize("is_train", TEST_VALUES["is_train"])
@@ -377,9 +377,9 @@ def test_Transformation():
                 target_field=FieldName.TARGET,
                 output_field="time_feat",
                 time_features=[
-                    time_feature.DayOfWeek(),
-                    time_feature.DayOfMonth(),
-                    time_feature.MonthOfYear(),
+                    time_feature.day_of_week,
+                    time_feature.day_of_month,
+                    time_feature.month_of_year,
                 ],
                 pred_length=pred_length,
             ),
@@ -446,9 +446,9 @@ def test_multi_dim_transformation(is_train):
                 target_field=FieldName.TARGET,
                 output_field="time_feat",
                 time_features=[
-                    time_feature.DayOfWeek(),
-                    time_feature.DayOfMonth(),
-                    time_feature.MonthOfYear(),
+                    time_feature.day_of_week,
+                    time_feature.day_of_month,
+                    time_feature.month_of_year,
                 ],
                 pred_length=pred_length,
             ),
@@ -792,7 +792,7 @@ def test_ctsplitter_mask_sorted(point_process_dataset):
             min_past=2,
             min_future=1,
         ),
-        freq=to_offset(point_process_dataset.freq),
+        freq=to_offset("H"),
     )
 
     # no boundary conditions
@@ -812,7 +812,7 @@ def test_ctsplitter_no_train_last_point(point_process_dataset):
             allow_empty_interval=False,
             min_past=2,
         ),
-        freq=to_offset(point_process_dataset.freq),
+        freq=to_offset("H"),
     )
 
     iter_de = splitter(point_process_dataset, is_train=False)
@@ -837,7 +837,7 @@ def test_ctsplitter_train_correct(point_process_dataset):
         instance_sampler=MockContinuousTimeSampler(
             ret_values=[1.01, 1.5, 1.99]
         ),
-        freq=to_offset(point_process_dataset.freq),
+        freq=to_offset("H"),
     )
 
     iter_de = splitter(point_process_dataset, is_train=True)
@@ -877,7 +877,7 @@ def test_ctsplitter_train_correct_out_count(point_process_dataset):
         instance_sampler=MockContinuousTimeSampler(
             ret_values=[1.01, 1.5, 1.99]
         ),
-        freq=to_offset(point_process_dataset.freq),
+        freq=to_offset("H"),
     )
 
     iter_de = splitter(shuffle_iterator(), is_train=True)
@@ -897,7 +897,7 @@ def test_ctsplitter_train_samples_correct_times(point_process_dataset):
             min_past=1.25,
             min_future=1.25,
         ),
-        freq=to_offset(point_process_dataset.freq),
+        freq=to_offset("H"),
     )
 
     iter_de = splitter(point_process_dataset, is_train=True)
@@ -921,7 +921,7 @@ def test_ctsplitter_train_short_intervals(point_process_dataset):
         instance_sampler=MockContinuousTimeSampler(
             ret_values=[1.01, 1.5, 1.99]
         ),
-        freq=point_process_dataset.freq,
+        freq=to_offset("H"),
     )
 
     iter_de = splitter(point_process_dataset, is_train=True)

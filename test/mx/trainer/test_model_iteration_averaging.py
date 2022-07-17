@@ -20,7 +20,7 @@ import pandas as pd
 import pytest
 
 from gluonts.dataset.common import ListDataset
-from gluonts.model.simple_feedforward import SimpleFeedForwardEstimator
+from gluonts.mx import SimpleFeedForwardEstimator
 from gluonts.mx.trainer import Trainer
 from gluonts.mx.trainer.model_iteration_averaging import (
     NTA,
@@ -51,7 +51,6 @@ def initialize_model() -> nn.HybridBlock:
         num_hidden_dimensions=[10],
         prediction_length=prediction_length,
         context_length=T,
-        freq=freq,
         trainer=Trainer(
             ctx="cpu",
             epochs=1,
